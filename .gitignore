@@ -1,0 +1,45 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# CSV attendance data (generated file)
+attendance.csv
+
+# Pickle files (embeddings - large/generated)
+*.pkl
+
+# DeepFace / model cache
+~/.deepface/
+.deepface/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.temp
+
+# TensorFlow logs (optional)
+logs/
+data/
+x.py/
