@@ -24,28 +24,41 @@ else:
        data={}
 
 
-for file in os.listdir(dataset_path):
-    if  not file.lower().endswith(('.jpeg','.jpg','.png')):
+for person in os.listdir(dataset_path):
+    person_path = os.path.join(dataset_path,person)
+    if  not os.path.isdir(person_path):
         continue
-    else:
-        image_path=os.path.join(dataset_path,file)
-        name=os.path.splitext(file)[0]
-        if name in data:
-               continue
-        encodings = DeepFace.represent(
-             img_path=image_path,
-             model_name='ArcFace',
-             enforce_detection=False,
-             detector_backend="opencv"
-           )
     
-        if len(encodings) == 0:
-            continue
-        else:
-             embedding = encodings[0]["embedding"]
-             data[name] = embedding
+    if person not in data:
+        data[person]=[]
+    for file in os.listdir(person_path): 
+            if not file.lower().endswith(('.jpeg','.jpg','.png')): 
+                continue 
+            else:
 
-     
+                image_path=os.path.join(person_path,file)
+                try:
+                    
+                    encodings = DeepFace.represent(
+                         img_path=image_path,
+                         model_name='ArcFace',
+                         enforce_detection=False,
+                         detector_backend="opencv"
+                        )
+    
+                    if len(encodings) == 0:
+                        continue
+                    
+                    embedding = encodings[0]["embedding"]
+                    if embedding not in data[person]:
+                         data[person].append(embedding)
+                         print(f"✅ Added: {file}")
+
+
+                except Exception as e:
+                      print(f"error {e}")
+
+
 with open(file_path, "wb") as f:
          pickle.dump(data, f)
 

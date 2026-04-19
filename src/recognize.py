@@ -1,28 +1,34 @@
-
 from deepface import DeepFace
 import numpy as np
 
+from src.utils import cosine_similarity,normalize
+
 def recognize_face(frame, known_embeddings, known_names):
     try:
-        # Get embedding of current frame face
-        result = DeepFace.represent(frame, model_name="ArcFace", enforce_detection=False)
+        result = DeepFace.represent(frame, model_name="ArcFace", enforce_detection=True)
 
         if len(result) == 0:
             return "Unknown"
 
-        embedding = result[0]["embedding"]
+        embedding = normalize(np.array(result[0]["embedding"]))
 
-        # Compare with stored embeddings
-        distances = [np.linalg.norm(np.array(embedding) - np.array(k)) for k in known_embeddings]
-        min_dist = min(distances)
+        similarities = []
+        for k in known_embeddings:
+            sim = cosine_similarity(embedding, k)
+            similarities.append(sim)            
 
-        threshold = 10
+        max_sim = max(similarities)
+        index = similarities.index(max_sim)
 
-        if min_dist < threshold:
-            index = distances.index(min_dist)
+        print(f"Max sim: {max_sim:.3f}, Match: {known_names[index]}")
+
+        threshold = 0.45
+
+        if max_sim > threshold:
             return known_names[index]
         else:
             return "Unknown"
 
-    except:
+    except Exception as e:
+        print("Error:", e)
         return "Unknown"

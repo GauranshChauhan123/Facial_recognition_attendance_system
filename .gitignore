@@ -42,4 +42,4 @@ attendance.csv
 # TensorFlow logs (optional)
 logs/
 data/
-x.py/
+x.py

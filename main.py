@@ -13,15 +13,28 @@ import pickle
 from src.recognize import recognize_face
 from datetime import datetime
 from deepface import DeepFace
+import numpy as  np
 
+from src.utils import normalize
 
 # Load embeddings
 with open("embeddings.pkl", "rb") as f:
     data = pickle.load(f)
 
-known_names = list(data.keys())
-known_embeddings = list(data.values())
+known_names = []
+known_embeddings = []
+for name, emb_list in data.items():
+    for emb in emb_list:
+        known_names.append(name)
+        known_embeddings.append(emb)
 
+
+known_embeddings = [normalize(np.array(e)) for e in known_embeddings]
+
+# print("Data keys:", data.keys())
+
+# for name, emb_list in data.items():
+#     print(name, "->", len(emb_list))
 
 
 def mark_attendance(name):
@@ -53,7 +66,8 @@ while True:
 
     # Update detection + recognition every 5 frames
     if frame_count % 5 == 0:
-        new_faces = DeepFace.extract_faces(frame, enforce_detection=False)
+        small_frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
+        new_faces = DeepFace.extract_faces(small_frame, enforce_detection=False)
 
         if new_faces:   # only update if faces found
             faces = new_faces
@@ -62,6 +76,7 @@ while True:
             for face in faces:
                 area = face["facial_area"]
                 x, y, w, h = area["x"], area["y"], area["w"], area["h"]
+                x, y, w, h = int(x*2), int(y*2), int(w*2), int(h*2)
 
                 face_img = frame[y:y+h, x:x+w]
                 name = recognize_face(face_img, known_embeddings, known_names)
@@ -75,7 +90,7 @@ while True:
     for i, face in enumerate(faces):
         area = face["facial_area"]
         x, y, w, h = area["x"], area["y"], area["w"], area["h"]
-
+        x, y, w, h = int(x*2), int(y*2), int(w*2), int(h*2)
         x1, y1, x2, y2 = x, y, x+w, y+h
 
         name = names[i] if i < len(names) else "Unknown"
