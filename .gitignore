@@ -27,10 +27,8 @@ attendance.csv
 
 # Pickle files (embeddings - large/generated)
 *.pkl
+*.npy
 
-# DeepFace / model cache
-~/.deepface/
-.deepface/
 
 # Jupyter notebooks checkpoints
 .ipynb_checkpoints/
@@ -42,4 +40,4 @@ attendance.csv
 # TensorFlow logs (optional)
 logs/
 data/
-x.py
+test.py

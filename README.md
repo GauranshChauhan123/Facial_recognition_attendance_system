@@ -1,145 +1,308 @@
-# 🎯 Face Recognition Attendance System
+# Face Recognition Attendance System
 
-A real-time face recognition-based attendance system built using **DeepFace**, **OpenCV**, and **Python**.
-The system detects faces from a webcam, recognizes individuals using stored embeddings, and automatically marks attendance.
+A real-time Face Recognition Attendance System built using OpenCV, YuNet, and SFace.
 
----
-
-## 🚀 Features
-
-* 🎥 Real-time face detection using webcam
-* 🧠 Face recognition using DeepFace embeddings
-* 📊 Automatic attendance marking (CSV file)
-* 🗓️ Duplicate prevention (one entry per day)
-* 👥 Supports multiple faces
-* ⚡ Optimized for performance (frame skipping + caching)
+This project detects faces from a webcam, recognizes registered users using facial embeddings, and automatically marks attendance with date and time in a CSV file.
 
 ---
 
-## 🛠️ Tech Stack
+# Features
 
-* Python
-* OpenCV
-* DeepFace
-* TensorFlow
-* NumPy
+- Real-time face recognition
+- Automatic attendance marking
+- Date and time logging
+- Duplicate attendance prevention
+- Unknown face detection
+- Multiple images per person support
+- Fast and lightweight system
+- Modular project architecture
 
 ---
 
-## 📂 Project Structure
+# Technologies Used
 
-```
-Attendance_System/
-│── src/
-│   |── recognize.py        # Face recognition logic
-│   | ── encodes.py 
-│── main.py                 # Main execution file
-│                           # Generate embeddings
-│── embeddings.pkl          # Stored face embeddings (ignored)
-│── attendance.csv          # Attendance records (auto-generated)
+- Python
+- OpenCV
+- YuNet Face Detector
+- SFace Face Recognizer
+- NumPy
+- Pandas
+
+---
+
+# Project Structure
+```bash
+project/
 │
-│── data/                   # Add images here (ignored)
-│── .gitignore
-│── README.md
+├── dataset/
+│    
+├── models/
+│   ├── face_detection_yunet_2023mar.onnx
+│   └── face_recognition_sface_2021dec.onnx
+│
+├── embeddings.npy
+├── names.pkl
+├── attendance.csv
+│
+├── encode_faces.py
+├── recognize.py
+├── utils.py
+├── main.py
+│
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## ⚙️ Installation
+# System Workflow
 
-### 1. Clone the repository
-
+```text
+Webcam Frame
+      ↓
+YuNet Face Detection
+      ↓
+Face Alignment
+      ↓
+SFace Embedding Extraction
+      ↓
+Cosine Similarity Matching
+      ↓
+Recognized / Unknown
+      ↓
+Attendance Marked
 ```
+
+---
+
+# Installation
+
+## 1. Clone Repository
+
+```bash
 git clone https://github.com/GauranshChauhan123/Facial_recognition_attendance_system
-cd attendance-system
+cd project-folder
 ```
 
-### 2. Create virtual environment
+---
 
-```
+## 2. Create Virtual Environment 
+
+### Windows
+
+```bash
 python -m venv venv
-venv\Scripts\activate   # Windows
+venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+### Linux / Mac
 
+```bash
+python3 -m venv venv
+source venv/bin/activate
 ```
+
+---
+
+## 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## 📸 How to Use
+# requirements.txt
 
-### Step 1: Add images
-
-* Create a folder named `data/`
-* Add images of persons (one person per image)
+```txt
+opencv-contrib-python==4.10.0.84
+numpy==1.26.4
+pandas==2.2.2
+```
 
 ---
 
-### Step 2: Generate embeddings
+# Download Required Models
 
-```
-python encodes.py
+Create a folder named:
+
+```bash
+models/
 ```
 
-👉 This creates `embeddings.pkl`
+Download these ONNX models from OpenCV Zoo:
+
+## YuNet Face Detector
+
+```text
+face_detection_yunet_2023mar.onnx
+```
+
+## SFace Face Recognizer
+
+```text
+face_recognition_sface_2021dec.onnx
+```
+
+Download Link:
+
+https://github.com/opencv/opencv_zoo
+
+Place both files inside the `models/` directory.
 
 ---
 
-### Step 3: Run the system
+# Dataset Preparation
 
+Inside the `dataset/` folder:
+
+- Create one folder per person
+- Add multiple images for each person
+
+Example:
+
+```bash
+dataset/
+│
+├── Abhi/
+│   ├── 1.jpg
+│   ├── 2.jpg
+│   └── 3.jpg
+│
+├── Rahul/
+│   ├── 1.jpg
+│   └── 2.jpg
 ```
+
+## Recommendations
+
+- Use clear front-face images
+- Add 5–10 images per person
+- Use different lighting conditions and angles
+- Avoid blurry images
+
+---
+
+# Generate Face Embeddings
+
+Run the following command:
+
+```bash
+python encode_faces.py
+```
+
+This script will:
+
+- Detect faces from dataset images
+- Generate facial embeddings using SFace
+- Store embeddings in `embeddings.npy`
+- Store names in `names.pkl`
+
+---
+
+# Start Face Recognition Attendance System
+
+Run:
+
+```bash
 python main.py
 ```
 
+The webcam will open and start real-time face recognition.
+
+Press:
+
+```text
+ESC
+```
+
+to exit the application.
+
 ---
 
-### Step 4: Attendance output
+# Attendance System
 
-* Stored in `attendance.csv`
-* Format:
+Attendance is stored in:
 
+```text
+attendance.csv
 ```
+
+Example:
+
+```csv
 Name,Date,Time
-abhi,2026-04-11,10:30:22
+Abhi,2026-05-26,14:35:10
+Rahul,2026-05-26,14:40:22
 ```
 
 ---
 
-## ⚡ Performance Optimizations
+# Duplicate Attendance Prevention
 
-* Frame skipping (runs detection every few frames)
-* Cached face detection to avoid flickering
-* Per-face recognition instead of full-frame processing
+The system prevents duplicate attendance entries for the same person on the same day.
 
----
+Example:
 
-## ⚠️ Notes
+- If Abhi is already marked today
+- The system will not mark attendance again
 
-* `data/`, `attendance.csv`, and `embeddings.pkl` are ignored in Git
-* Ensure good lighting for better accuracy
-* Tune threshold for better recognition results
 
----
+# File Descriptions
 
-## 🔮 Future Improvements
+## encode_faces.py
 
-* GUI (Tkinter / Streamlit)
-* Database integration (SQLite/MySQL)
-* Face tracking for smoother performance
-* Export to Excel
-* Live dashboard for attendance
+- Reads dataset images
+- Detects faces
+- Generates embeddings
+- Saves embeddings and labels
 
 ---
 
-## 👨‍💻 Author
+## recognize.py
 
-GAURANSH CHAUHAN
+- Loads stored embeddings
+- Compares embeddings using cosine similarity
+- Returns matched name or "Unknown"
 
 ---
 
-## ⭐ If you like this project
+## utils.py
 
-Give it a star ⭐ on GitHub!
+Contains utility/helper functions:
+
+- Cosine similarity
+- Drawing face boxes
+- Attendance marking
+
+---
+
+## main.py
+
+Main application file:
+
+- Opens webcam
+- Detects faces
+- Generates embeddings
+- Calls recognition module
+- Marks attendance
+- Displays results
+
+---
+
+# Future Improvements
+
+- GUI Interface
+- Streamlit Web App
+- Database Integration
+- Face Registration UI
+- Anti-Spoofing
+- Multi-Camera Support
+- Cloud Attendance System
+- Email Notifications
+
+---
+
+# License
+
+This project is open-source and available for educational purposes.
